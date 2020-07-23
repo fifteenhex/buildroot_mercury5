@@ -6,17 +6,20 @@ BUILDROOT_ARGS=BR2_DEFCONFIG=../br2midrive08/configs/midrive08_defconfig \
         BR2_DL_DIR=$(DLDIR) \
 	BR2_EXTERNAL="../br2midrive08"
 
+LINUXBRANCH=mstar_dev_v5_8_rebase_cleanup
+
 define clean_pkg
         rm -rf $(1)/output/build/$(2)/
 endef
 
 define update_git_package
 	@echo updating git package $(1)
-	git -C dl/$(1)/git fetch --force --all --tags
-	- git -C dl/$(1)/git reset --hard origin/$(2)
-	- git -C dl/$(1)/git reset --hard $(2)
-	git -C dl/$(1)/git clean -fd
-	rm -f dl/$(1)/$(1)-$(2).tar.gz
+	git -C $(DLDIR)/$(1)/git clean -fd
+	git -C $(DLDIR)/$(1)/git checkout master
+	- git -C $(DLDIR)/$(1)/git reset --hard origin/master
+	- git -C $(DLDIR)/$(1)/git branch -D $(2)
+	git -C $(DLDIR)/$(1)/git fetch --force --all --tags
+	rm -f $(DLDIR)/$(1)/*.tar.gz
 endef
 
 .PHONY: all \
@@ -53,11 +56,14 @@ buildroot_dl: $(OUTPUTS) $(DLDIR)
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) source
 
+buildroot_linux_menuconfig:
+	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) linux-menuconfig
+
 linux_clean:
-	$(call clean_pkg,$(BUILDROOT_PATH),linux-msc313e_dev)
+	$(call clean_pkg,$(BUILDROOT_PATH),$(LINUXBRANCH))
 
 linux_update: linux_clean
-	$(call update_git_package,linux,msc313e_dev)
+	$(call update_git_package,linux,$(LINUXBRANCH))
 
 clean:
 	$(MAKE)	-C $(BUILDROOT_PATH) clean
