@@ -14,12 +14,12 @@ endef
 
 define update_git_package
 	@echo updating git package $(1)
-	git -C $(DLDIR)/$(1)/git clean -fd
-	git -C $(DLDIR)/$(1)/git checkout master
+	- git -C $(DLDIR)/$(1)/git clean -fd
+	- git -C $(DLDIR)/$(1)/git checkout master
 	- git -C $(DLDIR)/$(1)/git reset --hard origin/master
 	- git -C $(DLDIR)/$(1)/git branch -D $(2)
-	git -C $(DLDIR)/$(1)/git fetch --force --all --tags
-	rm -f $(DLDIR)/$(1)/*.tar.gz
+	- git -C $(DLDIR)/$(1)/git fetch --force --all --tags
+	- rm -f $(DLDIR)/$(1)/*.tar.gz
 endef
 
 .PHONY: all \
@@ -29,7 +29,6 @@ endef
 	buildroot_dl \
 	linux_clean \
 	linux_update
-
 
 all: buildroot
 
@@ -52,12 +51,13 @@ buildroot: $(OUTPUTS) $(DLDIR)
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS)
 
-buildroot_dl: $(OUTPUTS) $(DLDIR)
+buildroot_dl: $(OUTPUTS) $(DLDIR) linux_update
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) source
 
 buildroot_linux_menuconfig:
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) linux-menuconfig
+	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) linux-savedefconfig
 
 linux_clean:
 	$(call clean_pkg,$(BUILDROOT_PATH),$(LINUXBRANCH))
