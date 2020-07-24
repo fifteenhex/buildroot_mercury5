@@ -4,7 +4,7 @@ DLDIR=$(PWD)/dl
 BUILDROOT_PATH=./buildroot
 BUILDROOT_ARGS=BR2_DEFCONFIG=../br2midrive08/configs/midrive08_defconfig \
         BR2_DL_DIR=$(DLDIR) \
-	BR2_EXTERNAL="../br2midrive08"
+	BR2_EXTERNAL="../br2midrive08 ../br2sanetime"
 
 LINUXBRANCH=mstar_dev_v5_8_rebase_cleanup
 
