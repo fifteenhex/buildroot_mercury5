@@ -49,7 +49,7 @@ buildroot_config:
 
 buildroot: $(OUTPUTS) $(DLDIR)
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS)
+	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) -s
 
 buildroot_dl: $(OUTPUTS) $(DLDIR) linux_update
 	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
