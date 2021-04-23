@@ -1,10 +1,5 @@
-OUTPUTS=$(PWD)/outputs
-DLDIR=$(PWD)/dl
-
-BUILDROOT_PATH=./buildroot
-BUILDROOT_ARGS=BR2_DEFCONFIG=../br2midrive08/configs/midrive08_defconfig \
-        BR2_DL_DIR=$(DLDIR) \
-	BR2_EXTERNAL="../br2midrive08 ../br2sanetime"
+DEFCONFIG=../br2midrive08/configs/midrive08_defconfig
+EXTERNALS=../br2midrive08 ../br2sanetime
 
 LINUXBRANCH=mstar_dev_v5_8_rebase_cleanup
 
@@ -23,47 +18,14 @@ define update_git_package
 endef
 
 .PHONY: all \
-	bootstrap \
-	buildroot_config \
-	buildroot \
-	buildroot_dl \
-	linux_clean \
-	linux_update
+	bootstrap
 
 all: buildroot
-
-$(OUTPUTS):
-	mkdir -p $(OUTPUTS)
-
-$(DLDIR):
-	mkdir -p $(DLDIR)
 
 bootstrap:
 	git submodule init
 	git submodule update
 
-buildroot_config:
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) menuconfig
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) savedefconfig
+./br2secretsauce/common.mk: bootstrap
 
-buildroot: $(OUTPUTS) $(DLDIR)
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) -s
-
-buildroot_dl: $(OUTPUTS) $(DLDIR) linux_update
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) defconfig
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) source
-
-buildroot_linux_menuconfig:
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) linux-menuconfig
-	$(MAKE) -C $(BUILDROOT_PATH) $(BUILDROOT_ARGS) linux-savedefconfig
-
-linux_clean:
-	$(call clean_pkg,$(BUILDROOT_PATH),$(LINUXBRANCH))
-
-linux_update: linux_clean
-	$(call update_git_package,linux,$(LINUXBRANCH))
-
-clean:
-	$(MAKE)	-C $(BUILDROOT_PATH) clean
+include ./br2secretsauce/common.mk

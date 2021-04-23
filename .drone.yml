@@ -39,7 +39,7 @@ steps:
   image: m5_buildroot
   pull: if-not-exists
   commands:
-  - make buildroot_dl
+  - make buildroot-dl
 
 - name: rebuild-cache
   image: drillster/drone-volume-cache
