@@ -22,10 +22,11 @@ endef
 
 all: buildroot
 
-bootstrap:
+bootstrap.stamp:
 	git submodule init
 	git submodule update
+	touch bootstrap.stamp
 
-./br2secretsauce/common.mk: bootstrap
+./br2secretsauce/common.mk: bootstrap.stamp
 
 include ./br2secretsauce/common.mk
